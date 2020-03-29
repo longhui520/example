@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        *{
+            padding: 0;
+            margin: 0;
+        }
+        .box{
+            height: 500px;
+            border:1px solid red;
+        }
+    </style>
+</head>
+<body>
+    <div class="box">
+
+    </div>
+    <script>
+        var el = document.querySelector(".box")
+        var sx = 0;
+        el.addEventListener('touchstart',function(e){
+            el.style.transition = 'none'
+            var sx = e.touches[0].screenY;
+            var fn1= function(e){
+                var dx = e.touches[0].screenY-sx
+                el.style.transform = `translateY(${dx}px)`;
+            };
+            var fn2 = function(e){
+                sx = 0
+                el.style.transform = 'translateY(0px)';
+                el.style.transition = 'all 1s'
+            }
+            el.removeEventListener('touchemove',fn1);
+            el.removeEventListener('touchend',fn2);
+            el.addEventListener('touchmove',fn1);
+            el.addEventListener('touchend',fn2);
+        });
+        
+    </script>
+</body>
+</html>

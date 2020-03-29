@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>下拉刷新</title>
+        <style>
+            /* 下拉刷新的css样式 */
+            .slide-wrap {
+                width: 100%;
+            }
+            .slide-wrap .sliding {
+                width: 100%;
+                height: 50px;
+                background: blue;
+                border-radius: 0 0 50% 50%;
+                text-align: center;
+                font-size: 20px;
+                display: none;
+            }
+            .slide-wrap .slided {
+                width: 100%;
+                background: red;
+                line-height: 50px;
+                text-align: center;
+                font-size: 20px;
+                border-radius: 0 0 50% 50%;
+                display: none;
+            }
+            .float-box {
+                width: 100%;
+                height: 500px;
+                background: pink;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="float-box">float-box</div>
+
+        <script>
+            //封装下拉刷新的功能模块
+            (function() {
+                //1，首先创建一个slide构造函数，用来初始化属性与函数
+                function Slide(dom) {
+                    this.start_y = null; //手指滑动屏幕的初始位置
+                    this.end_y = null; //手指滑动屏幕的结束位置
+                    this.render(dom); //初始化下拉功能的render函数
+                }
+                //2、编写render函数
+                //render函数是用来动态创建下拉刷新的动画图。现在我们在Slide原型上编写render函数。
+                Slide.prototype = {
+                    render: function(dom) {
+                        //拿到body节点
+                        var body = document.getElementsByTagName('body');
+                        //创建div，用来显示下拉效果。这个div有‘正在刷新’和‘下拉刷新’这两个子节点
+                        var newItem = document.createElement('div');
+                        //给div设置class属性，该class是下拉效果的样式
+                        newItem.className = 'slide-wrap';
+                        //用innerHTML将‘正在刷新。。。’和‘下拉刷新着’两个子节点插入到上面创建的div中。
+                        newItem.innerHTML = '<div class="slided">正在刷新。。。</div>' + '<div class="sliding">下拉刷新</div>';
+                        //然后将创建的div插入到页面的前面
+                        body[0].insertBefore(newItem, dom[0]);
+                        //获取创建完成的下拉刷新div
+                        var dom2 = document.getElementsByClassName('slide-wrap');
+                        //运行slide_start()
+                        this.slide_start(dom2);
+                        // console.log(this)//this指向Slide构造函数
+                    },
+                    //3、编写slide-strat()函数
+                    slide_start: function(dom2) {
+                        var _this = this;
+                        //监听document整个文档的touchstart事件
+                        document.addEventListener('touchstart', function(evt) {
+                            var touch = evt.touches[0]; //获取第一个触点
+                            _this.start_y = Number(touch.pageY); //第一个触点的y坐标
+                            console.log(this); //this指向document
+                            console.log(_this); //_this指向Slide构造函数
+                        });
+                        // slide_move
+                        _this.slide_move(dom2); //这边 用this也行
+                        console.log(_this); //_this指向Slide构造函数
+                        console.log(this);
+                    },
+                    //4、编写slide_move()函数
+                    slide_move: function(dom2) {
+                        var _this = this;
+                        //监听document的touchmove事件
+                        document.addEventListener('touchmove', function(evt) {
+                            //下面这一行代码是保证在手指移动的距离还不到规定的长度的时候，就不显示‘正在刷新’
+                            dom2[0].childNodes[0].style.display = 'none';
+                            var touch = evt.touches[0]; //获取第一个触点
+                            //获取手指向下移动的长度距离
+                            _this.end_y = Number(touch.pageY) - _this.start_y;
+                            // 判断手指移动距离是否大于5，这个为什么设置为5，而不是0呢，主要是为了避免用户不觉意的轻微滑动
+                            if (_this.end_y > 5) {
+                                // 当滑动距离大于5时，将‘下拉刷新’的效果显示出来，同时将他的高度赋值为手指滑动的距离，已达到慢慢下拉的效果
+                                dom2[0].childNodes[1].style.display = 'block';
+                                dom2[0].childNodes[1].style.height = _this.end_y + 'px';
+                                dom2[0].childNodes[1].style.lineHeight = _this.end_y + 'px';
+                            }
+                        });
+                        // 执行slide_end()函数
+                        _this.slide_end(dom2);
+                    },
+                    // 5、编写slide_end()函数
+                    slide_end: function(dom2) {
+                        var _this = this;
+                        //监听touchend事件
+                        document.addEventListener('touchend', function(evt) {
+                            // 当手指松开的时候，判断手指的滑动距离如果大于100就将‘正在刷新。。。’的效果显示出来，同时隐藏‘下拉刷新的效果’
+                            if (_this.end_y > 100) {
+                                dom2[0].childNodes[1].style.display = 'none';
+                                dom2[0].childNodes[0].style.display = 'block';
+                                console.log('开始刷新');
+                                // 这里模拟3秒后刷新成功，然后隐藏‘正在刷新。。’效果
+                                setTimeout(function() {
+                                    dom2[0].childNodes[0].style.display = 'none';
+                                }, 3000);
+                            } else {
+                                // 这里是当手指滑动距离小于100时，就将‘下拉刷新’的效果隐藏
+                                dom2[0].childNodes[1].style.display = 'none';
+                            }
+                        });
+                    }
+                }; //Slide.prototype
+                //最后将Slide构造函数暴露到全局window
+                window.Slide = Slide;
+            })(); //最外层的自执行函数
+
+            //使用方法
+            //在页面中new一个Slide()。并将主页的dom节点传进去即可
+            var target = document.getElementsByClassName('float-box');
+            new Slide(target);
+        </script>
+    </body>
+</html>
