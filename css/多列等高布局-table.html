@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>多列等高布局</title>
+    <style>
+        .container{
+            width: 500px;
+            /* height: 100px; */
+            margin:100px auto 0;
+            border:1px solid #000;
+            display: table;
+        }
+        .container>div{
+            display: table-cell;
+        }
+        .left{
+            width: 100px;
+            background-color: red;
+        }
+        .right{
+            width: 400px;
+            background-color: green;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="left box">我是left</div>
+        <div class="right box">我是right我是right我是right我是right我是right我是right我是right我是right</div>
+    </div>
+    <div>11</div>
+</body>
+</html>

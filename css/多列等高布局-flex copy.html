@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>多列等高布局</title>
+        <style>
+            #wrapper {
+                display: inline-block;
+                width: 400px;
+                border-left: 200px solid #6ee0b6;
+                background-color: #c3c3ff;
+            }
+
+            .left {
+                float: left;
+                width: 200px;
+                margin-left: -200px;
+                border-right: 10px solid #999;
+                box-sizing: border-box;
+                padding: 20px;
+            }
+            .right {
+                float: left;
+                margin-left: -10px;
+                border-left: 10px solid #999;
+                padding: 20px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="wrapper">
+            <div class="left">
+                <p>left</p>
+                <p>left</p>
+                <p>left</p>
+                <p>left</p>
+            </div>
+            <div class="right">
+                <p>right</p>
+                <p>right</p>
+            </div>
+        </div>
+    </body>
+</html>
